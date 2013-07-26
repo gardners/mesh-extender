@@ -1,0 +1,8 @@
+#!/bin/sh
+
+mkdir -p /serval /etc/serval
+cp /tmp/serval.conf /etc/serval/serval.conf
+cp /tmp/S94servald /etc/rc.d/S94servald
+cp /tmp/dhcp /etc/config/dhcp
+cp /tmp/network /etc/config/network
+cp /tmp/wireless /etc/config/wireless

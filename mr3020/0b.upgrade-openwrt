@@ -1,0 +1,4 @@
+#!/bin/sh
+
+scp openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin root@${1}:/tmp
+ssh root@${1} "( cd /tmp ; sysupgrade -v openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin )"

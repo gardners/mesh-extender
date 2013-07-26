@@ -1,0 +1,15 @@
+#!/bin/sh
+cd /tmp
+mkdir /tmp/sbin /tmp/lib
+cp /usr/sbin/fdisk /usr/sbin/mk* /usr/sbin/*fs* /tmp/sbin
+cp /usr/lib/* /tmp/lib
+opkg remove fdisk e2fsprogs
+opkg install --force-overwrite *.ipk
+umount /mnt
+mount /dev/sda2 /mnt || exit
+mkdir /mnt/sbin
+cp /sbin/* /tmp/sbin/* /mnt/sbin
+mkdir /mnt/lib
+cp /tmp/lib/* /mnt/lib/
+umount /mnt
+rm -fr /tmp/sbin /tmp/lib

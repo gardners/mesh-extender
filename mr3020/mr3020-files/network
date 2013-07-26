@@ -1,0 +1,25 @@
+config interface 'loopback'
+	option ifname 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config interface 'lan'
+	option ifname 'eth0'
+#	option type 'bridge'
+	option proto 'static'
+	option ipaddr '192.168.2.4'
+	option netmask '255.255.255.0'
+
+config interface public
+	option proto 	static
+	option ipaddr	192.168.100.1
+	option netmask	255.255.255.0
+	option macaddr 90:F6:52:8B:77:DE 
+
+config interface mesh
+    option ifname wlan0-1
+    option proto    static
+      option ipaddr 29.167.164.5
+      option netmask 254.0.0.0
+      option macaddr 90:F6:52:8B:77:DF 

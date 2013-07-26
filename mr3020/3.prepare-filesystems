@@ -1,0 +1,4 @@
+#!/bin/sh
+ssh root@${1} rm /tmp/*.ipk
+scp mr3020-scripts/prepare-filesystems mr3020-packages/block-mount_*_ar71xx.ipk mr3020-packages/kmod-fs-*_ar71xx.ipk mr3020-packages/blkid* mr3020-packages/swap* root@${1}:/tmp
+ssh root@${1} /tmp/prepare-filesystems

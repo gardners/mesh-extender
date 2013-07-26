@@ -1,0 +1,11 @@
+#!/bin/sh
+
+ssh root@$1 rm /tmp/\*.ipk
+
+cd mr3020-packages
+
+scp kmod-lib-crc16_*_ar71xx.ipk kmod-scsi-core_*_ar71xx.ipk kmod-usb-storage-extras_*_ar71xx.ipk kmod-usb-storage_*_ar71xx.ipk libuuid_*_ar71xx.ipk libblkid_*_ar71xx.ipk libcom_err_*_ar71xx.ipk libpthread_*_ar71xx.ipk libext2fs_*_ar71xx.ipk e2fsprogs_*_ar71xx.ipk fdisk_*_ar71xx.ipk root@${1}:/tmp
+
+ssh root@$1 "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk )"
+
+
