@@ -1,0 +1,15 @@
+#!/bin/sh
+ssh root@${1} rm /tmp/*.ipk
+mkdir -p tmp
+meship=`cat /dev/urandom | hexdump -e '1/1 "%1u" "." 1/1 "%1u" "." 1/1 "%1u" "\n"' | head -1`
+ether1=`cat /dev/urandom | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" "\n"' | head -1`
+ether2=`cat /dev/urandom | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" "\n"' | head -1`
+echo $meship $ether1 $ether2
+sed -e s/MESHIP/$meship/g -e s/MESHETHER/$ether1/g -e s/APETHER/$ether2/g < mr3020-files/network > tmp/network.$$
+cat tmp/network.$$
+scp tmp/network.$$ root@${1}:/etc/config/network
+rm tmp/network.$$
+cd mr3020-files
+scp wireless dhcp root@${1}:/etc/config/
+cd ..
+#ssh root@${1} reboot
