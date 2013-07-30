@@ -10,9 +10,14 @@ cat tmp/network.$$
 scp tmp/network.$$ root@${1}:/etc/config/network
 rm tmp/network.$$
 cd mr3020-files
-ssh root@${1} mkdir -p /etc/serval
+ssh root@${1} mkdir -p /etc/serval /serval
 scp system wireless dhcp root@${1}:/etc/config/
 scp inittab root@${1}:/etc/
-scp runservald serval.conf root@${1}:/etc/servald/
+scp runservald serval.conf root@${1}:/etc/serval/
+ssh root@${1} "( umount /serval ; mount /dev/sda2 /serval )"
+scp servald.me root@${1}:/serval/servald
+ssh root@${1} "( umount /serval )"
+ssh root@${1} "( umount /serval-var ; mount /dev/sda3 /serval-var ; mkdir -p /serval-var/log /serval-var/rhizome )"
+ssh root@${1} "( umount /serval-var )"
 cd ..
 #ssh root@${1} reboot
