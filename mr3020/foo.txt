@@ -1,6 +1,0 @@
---2013-07-26 17:16:10--  http://downloads.openwrt.org/snapshots/trunk/ar71xx/index.html
-Resolving downloads.openwrt.org (downloads.openwrt.org)... 78.24.191.177
-Connecting to downloads.openwrt.org (downloads.openwrt.org)|78.24.191.177|:80... connected.
-HTTP request sent, awaiting response... 404 Not Found
-2013-07-26 17:16:11 ERROR 404: Not Found.
-
