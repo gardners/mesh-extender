@@ -1,5 +1,7 @@
 #!/bin/sh
 
+scp ~/.ssh/id_rsa.pub  root@${1}:/etc/dropbear/authorized_keys
+
 ssh root@$1 rm /tmp/\*.ipk
 
 cd mr3020-packages
