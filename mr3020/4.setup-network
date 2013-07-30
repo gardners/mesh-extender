@@ -10,6 +10,9 @@ cat tmp/network.$$
 scp tmp/network.$$ root@${1}:/etc/config/network
 rm tmp/network.$$
 cd mr3020-files
-scp wireless dhcp root@${1}:/etc/config/
+ssh root@${1} mkdir -p /etc/serval
+scp system wireless dhcp root@${1}:/etc/config/
+scp inittab root@${1}:/etc/
+scp runservald serval.conf root@${1}:/etc/servald/
 cd ..
 #ssh root@${1} reboot
