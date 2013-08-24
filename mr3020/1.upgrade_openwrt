@@ -1,0 +1,7 @@
+#!/bin/sh
+
+scp ~/.ssh/id_rsa.pub  root@${1}:/etc/dropbear/authorized_keys
+
+scp openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin root@${1}:/tmp
+# We use a short keep-alive interval so that ssh realises when the far end has rebooted and dropped the connection.
+ssh -o TCPKeepAlive=yes -o ServerAliveInterval=5  root@${1} "( cd /tmp ; sysupgrade -v openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin )"

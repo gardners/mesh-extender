@@ -1,2 +1,0 @@
-scp mr3020-scripts/run-fdisk.sh root@${1}:/tmp
-ssh root@${1} /tmp/run-fdisk.sh

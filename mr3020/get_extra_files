@@ -1,0 +1,27 @@
+mkdir -p tmp/staging
+cd tmp
+rm -fr staging
+mkdir staging
+cd staging
+find .
+
+tar zxvf ../../mr3020-packages/minicom_*_ar71xx.ipk data.tar.gz
+tar zxvf data.tar.gz
+tar zxvf ../../mr3020-packages/libpcap*_ar71xx.ipk data.tar.gz
+tar zxvf data.tar.gz
+tar zxvf ../../mr3020-packages/libncurses_*.ipk data.tar.gz
+tar zxvf data.tar.gz
+tar zxvf ../../mr3020-packages/terminfo_*.ipk data.tar.gz
+tar zxvf data.tar.gz
+tar zxvf ../../mr3020-packages/tcpdump_*.ipk data.tar.gz
+tar zxvf data.tar.gz
+
+rm data.tar.gz
+mv usr/lib lib
+mv usr/sbin sbin
+mv usr/share share
+rmdir usr
+
+tar zcvf ../../mr3020-files/extra-files-serval.tgz sbin lib
+tar zcvf ../../mr3020-files/extra-files-usr.tgz share
+

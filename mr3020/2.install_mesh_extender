@@ -1,0 +1,72 @@
+#!/bin/sh
+
+# Wait until box is up and running
+until ssh root@${1} /bin/true; do
+   sleep 2
+done
+
+scp ~/.ssh/id_rsa.pub  root@${1}:/etc/dropbear/authorized_keys
+
+ssh root@$1 rm /tmp/\*.ipk
+
+cd mr3020-packages
+scp kmod-lib-crc16_*_ar71xx.ipk kmod-scsi-core_*_ar71xx.ipk kmod-usb-storage-extras_*_ar71xx.ipk kmod-usb-storage_*_ar71xx.ipk libuuid_*_ar71xx.ipk libblkid_*_ar71xx.ipk libcom_err_*_ar71xx.ipk libpthread_*_ar71xx.ipk libext2fs_*_ar71xx.ipk e2fsprogs_*_ar71xx.ipk fdisk_*_ar71xx.ipk root@${1}:/tmp
+cd ..
+
+ssh root@$1 "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk )"
+
+
+scp mr3020-scripts/run-fdisk.sh root@${1}:/tmp
+ssh root@${1} /tmp/run-fdisk.sh
+
+#!/bin/sh
+ssh root@${1} rm /tmp/*.ipk
+scp mr3020-scripts/prepare-filesystems mr3020-packages/block-mount_*_ar71xx.ipk mr3020-packages/kmod-fs-*_ar71xx.ipk mr3020-packages/blkid* mr3020-packages/swap* mr3020-packages/librt* root@${1}:/tmp
+ssh root@${1} /tmp/prepare-filesystems
+
+
+#!/bin/sh
+ssh root@${1} rm /tmp/*.ipk
+mkdir -p tmp
+meship=`cat /dev/urandom | hexdump -e '1/1 "%1u" "." 1/1 "%1u" "." 1/1 "%1u" "\n"' | head -1`
+ether1=`cat /dev/urandom | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" "\n"' | head -1`
+ether2=`cat /dev/urandom | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" "\n"' | head -1`
+echo $meship $ether1 $ether2
+
+
+sed -e s/MESHIP/$meship/g -e s/MESHETHER/$ether1/g -e s/APETHER/$ether2/g < mr3020-files/network > tmp/network.$$
+cat tmp/network.$$
+scp tmp/network.$$ root@${1}:/etc/config/network
+rm tmp/network.$$
+cd mr3020-files
+ssh root@${1} mkdir -p /etc/serval /serval /serval-var
+scp system wireless dhcp root@${1}:/etc/config/
+scp profile root@${1}:/etc/
+scp S94servald root@${1}:/etc/rc.d/
+scp inittab root@${1}:/etc/
+scp runservald serval.conf root@${1}:/etc/serval/
+ssh root@${1} "( umount /serval ; mount /dev/sda2 /serval )"
+scp servald.me root@${1}:/serval/servald
+ssh root@${1} "( umount /serval )"
+ssh root@${1} "( umount /serval-var ; mount /dev/sda3 /serval-var ; mkdir -p /serval-var/log /serval-var/rhizome )"
+ssh root@${1} "( umount /serval-var )"
+cd ..
+
+ssh root@${1} "( mount /dev/sda2 /serval )"
+scp mr3020-files/extra-files-serval.tgz root@${1}:/serval/s.tgz
+scp mr3020-files/extra-files-usr.tgz root@${1}:/serval/u.tgz
+ssh root@${1} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd /usr ; tar zxvf /serval/u.tgz ; rm /serval/u.tgz ; umount /serval )"
+
+cd mr3020-packages
+ssh root@${1} "( rm /tmp/*.ipk )"
+scp kmod-fs-vfat* kmod-fs-msdos* root@${1}:/tmp
+ssh root@$1 "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk )"
+cd ..
+
+ssh -o TCPKeepAlive=yes -o ServerAliveInterval=5 root@${1} reboot
+
+echo "Waiting for reboot to complete."
+# Wait until box is up and running
+until ssh root@${1} /bin/true; do
+   sleep 2
+done
