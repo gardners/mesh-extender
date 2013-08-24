@@ -12,6 +12,7 @@ rm tmp/network.$$
 cd mr3020-files
 ssh root@${1} mkdir -p /etc/serval /serval /serval-var
 scp system wireless dhcp root@${1}:/etc/config/
+scp profile root@${1}:/etc/
 scp S94servald root@${1}:/etc/rc.d/
 scp inittab root@${1}:/etc/
 scp runservald serval.conf root@${1}:/etc/serval/
@@ -21,4 +22,7 @@ ssh root@${1} "( umount /serval )"
 ssh root@${1} "( umount /serval-var ; mount /dev/sda3 /serval-var ; mkdir -p /serval-var/log /serval-var/rhizome )"
 ssh root@${1} "( umount /serval-var )"
 cd ..
-#ssh root@${1} reboot
+scp mr3020-files/extra-files-serval.tgz root@${1}:/serval/s.tgz
+scp mr3020-files/extra-files-root.tgz root@${1}:/serval/r.tgz
+ssh root@${1} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd / ; tar zxvf /serval/r.tgz ; rm /serval/r.tgz )"
+ssh root@${1} reboot
