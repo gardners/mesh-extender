@@ -5,7 +5,8 @@ START=41
 
 start() {
   # Start servald
-  mkdir -p /serval /serval-var
+  mkdir -p /serval /serval-var /dos
+  mount /dev/sda1 /dos
   mount /dev/sda2 /serval
   mount /dev/sda3 /serval-var
   export SERVALINSTANCE_PATH=/etc/serval

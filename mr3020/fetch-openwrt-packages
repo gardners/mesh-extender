@@ -3,7 +3,7 @@
 kernelversion=`wget -q -O - http://downloads.openwrt.org/snapshots/trunk/ar71xx/packages/ | grep kmod-fs-vfat | cut -f2 -d_`
 echo kernel version is $kernelversion
 
-packagelist=`wget -q -O - http://downloads.openwrt.org/snapshots/trunk/ar71xx/packages/ | egrep "blkid_|block-mount|dosfsck|e2fsprogs|\"fdisk|libblkid|libcom_err|libext2fs|libpthread|libuuid|librt_|mkdosfs|swap-utils|tcpdump_|minicom|ncurses|terminfo|libpcap" | cut -f2 -d\"`
+packagelist=`wget -q -O - http://downloads.openwrt.org/snapshots/trunk/ar71xx/packages/ | egrep "blkid_|block-mount|dosfsck|e2fsprogs|\"fdisk|libblkid|libcom_err|libext2fs|libpthread|libuuid|librt_|mkdosfs|swap-utils|tcpdump_|minicom|ncurses|terminfo|libpcap|mkdosfs|dosfsck|dosfslabel" | cut -f2 -d\"`
 
 rm mr3020-packages/*.ipk
 for file in $packagelist kmod-fs-vfat_${kernelversion}_ar71xx.ipk kmod-fs-msdos_${kernelversion}_ar71xx.ipk kmod-fs-ext4_${kernelversion}_ar71xx.ipk kmod-lib-crc16_${kernelversion}_ar71xx.ipk kmod-scsi-core_${kernelversion}_ar71xx.ipk kmod-usb-serial-cp210x_${kernelversion}_ar71xx.ipk kmod-usb-serial-pl2303_${kernelversion}_ar71xx.ipk kmod-usb-serial_${kernelversion}_ar71xx.ipk kmod-usb-storage-extras_${kernelversion}_ar71xx.ipk kmod-usb-storage_${kernelversion}_ar71xx.ipk ; do

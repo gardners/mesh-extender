@@ -15,6 +15,12 @@ tar zxvf ../../mr3020-packages/terminfo_*.ipk data.tar.gz
 tar zxvf data.tar.gz
 tar zxvf ../../mr3020-packages/tcpdump_*.ipk data.tar.gz
 tar zxvf data.tar.gz
+tar zxvf ../../mr3020-packages/mkdosfs_*.ipk data.tar.gz
+tar zxvf data.tar.gz
+tar zxvf ../../mr3020-packages/dosfsck_*.ipk data.tar.gz
+tar zxvf data.tar.gz
+tar zxvf ../../mr3020-packages/dosfslabel_*.ipk data.tar.gz
+tar zxvf data.tar.gz
 
 rm data.tar.gz
 mv usr/lib lib

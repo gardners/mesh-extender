@@ -61,7 +61,7 @@ ssh root@${1} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd /usr ; tar zxvf /se
 cd mr3020-packages
 ssh root@${1} "( rm /tmp/*.ipk )"
 scp kmod-fs-vfat* kmod-fs-msdos* root@${1}:/tmp
-ssh root@$1 "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk )"
+ssh root@$1 "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk ; mount /dev/sda2 /serval ; /serval/sbin/mkdosfs /dev/sda1 ; mkdir /dos ; umount /serval)"
 cd ..
 
 ssh -o TCPKeepAlive=yes -o ServerAliveInterval=5 root@${1} reboot
