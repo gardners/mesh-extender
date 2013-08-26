@@ -24,6 +24,7 @@ tar zxvf data.tar.gz
 
 rm data.tar.gz
 mv usr/lib lib
+mv lib/lib/* lib
 mv usr/sbin sbin
 mv usr/share share
 rmdir usr
