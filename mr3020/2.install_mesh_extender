@@ -3,14 +3,10 @@
 ssh="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 scp="scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
-$ssh root@${1}
-
 # Wait until box is up and running
-until $ssh root@${1} /bin/true; do
+until $scp ~/.ssh/id_rsa.pub  root@${1}:/etc/dropbear/authorized_keysssh; do
    sleep 2
 done
-
-$scp ~/.ssh/id_rsa.pub  root@${1}:/etc/dropbear/authorized_keys
 
 $ssh root@$1 rm /tmp/\*.ipk
 
