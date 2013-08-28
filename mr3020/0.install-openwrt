@@ -8,7 +8,7 @@
 # fully written! When flashing is done the router automatically
 # reboots (as shown by all the leds flashing once).
 
-set firmware=openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin
+firmware=openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin
 
 curl \
   --user admin:admin \
