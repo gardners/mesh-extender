@@ -30,11 +30,12 @@ $ssh root@${1} /tmp/prepare-filesystems
 $ssh root@${1} rm /tmp/*.ipk
 mkdir -p tmp
 
-apE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
+  apE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
 meshE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'
 
-#last 2 of mesh ip is last 2 of mac
-  meship=`echo $meshE |awk -F: '{ p4=("0x" substr($4,0,2))+0  ; p5=("0x" substr($5,0,2))+0; ;printf "%d.%d",p4,p5 }' `
+#mesh ip is last 3 of mac munched to 10.64/10
+  meship=`echo $meshE |awk -F: '{  p3=("0x" substr($3,0,2))+0; p4=("0x" substr($4,0,2))+0  ;\
+	 p5=("0x" substr($5,0,2))+0; printf "%d.%d.%d",(64+p3%4),p4,p5 }' `
  
 # AP IP is last 2 of mac munged to fit 172.16-31
   apip=`echo $apE |awk -F: '{ p4=("0x" substr($4,0,2))+0 ; p5=("0x" substr($5,0,2))+0  ;printf "%d.%d",(16+p4%16),p5 }' `
