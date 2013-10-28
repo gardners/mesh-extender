@@ -12,14 +12,15 @@ config interface 'lan'
 	option netmask '255.255.255.0'
 
 config interface public
+	option 'ifname'	'wlan0'
 	option proto 	static
-	option ipaddr	192.168.100.1
-	option netmask	255.255.255.0
-	option macaddr 82:APETHER
+	option ipaddr	'172.APIP.1'
+	option netmask	'255.255.255.0'
+	option macaddr	'82:APETHER'
 
 config interface mesh
-    option ifname wlan0-1
-    option proto    static
-      option ipaddr 29.MESHIP
-      option netmask 254.0.0.0
-      option macaddr 82:MESHETHER
+	option ifname	'wlan0-1'
+	option proto	static
+	option ipaddr	'10.64.MESHIP'
+	option netmask	'255.192.0.0
+	option macaddr 	'82:MESHETHER'

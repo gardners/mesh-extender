@@ -29,19 +29,31 @@ $ssh root@${1} /tmp/prepare-filesystems
 #!/bin/sh
 $ssh root@${1} rm /tmp/*.ipk
 mkdir -p tmp
-meship=`cat /dev/urandom | hexdump -e '1/1 "%1u" "." 1/1 "%1u" "." 1/1 "%1u" "\n"' | head -1`
-ether1=`cat /dev/urandom | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" "\n"' | head -1`
-ether2=`cat /dev/urandom | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" "\n"' | head -1`
-echo $meship $ether1 $ether2
 
+apE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
+meshE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'
 
-sed -e s/MESHIP/$meship/g -e s/MESHETHER/$ether1/g -e s/APETHER/$ether2/g < mr3020-files/network > tmp/network.$$
+#last 2 of mesh ip is last 2 of mac
+  meship=`echo $meshE |awk -F: '{ p4=("0x" substr($4,0,2))+0  ; p5=("0x" substr($5,0,2))+0; ;printf "%d.%d",p4,p5 }' `
+ 
+# AP IP is last 2 of mac munged to fit 172.16-31
+  apip=`echo $apE |awk -F: '{ p4=("0x" substr($4,0,2))+0 ; p5=("0x" substr($5,0,2))+0  ;printf "%d.%d",(16+p4%16),p5 }' `
+
+echo $meship $meshE $apE $apip
+
+sed -e s/MESHIP/$meship/g -e s/APIP/$apip/g -e s/MESHETHER/$meshE/g  -e s/APETHER/$apE/g < mr3020-files/network > tmp/network.$$
+
 cat tmp/network.$$
 $scp tmp/network.$$ root@${1}:/etc/config/network
 rm tmp/network.$$
+
+wlanmac=`$ssh root@{1} "cat /sys/class/ieee80211/phy0/macaddress"`
+sed -e s/WIMAC/$wlanmac/g < mr3020-files/wireless > tmp/wireless.$$ 
+$scp tmp/wireless.$$ root@${1}:/etc/config/wireless
+
 cd mr3020-files
 $ssh root@${1} mkdir -p /etc/serval /serval /serval-var /etc/hotplug.d/button
-$scp system wireless dhcp root@${1}:/etc/config/
+$scp system dhcp root@${1}:/etc/config/
 $scp profile root@${1}:/etc/
 $scp S94servald root@${1}:/etc/rc.d/
 $scp hotplug2.rules inittab root@${1}:/etc/
