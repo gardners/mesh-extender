@@ -4,11 +4,9 @@ ssh="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 scp="scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
 # Wait until box is up and running
-until $scp ~/.ssh/id_rsa.pub  root@${1}:/etc/dropbear/authorized_keysssh; do
+until $scp ~/.ssh/id_rsa.pub  root@${1}:/etc/dropbear/authorized_keys; do
    sleep 2
 done
-
-$ssh root@$1 rm /tmp/\*.ipk
 
 # Remove any postinstalled packages
 $scp mr3020-scripts/cleanup-packages.sh root@${1}:/tmp
