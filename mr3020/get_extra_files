@@ -1,3 +1,5 @@
+#!/bin/csh -f
+
 mkdir -p tmp/staging
 cd tmp
 rm -fr staging
@@ -5,27 +7,27 @@ mkdir staging
 cd staging
 find .
 
-tar zxvf ../../mr3020-packages/minicom_*_ar71xx.ipk data.tar.gz
-tar zxvf data.tar.gz
-tar zxvf ../../mr3020-packages/libpcap*_ar71xx.ipk data.tar.gz
-tar zxvf data.tar.gz
-tar zxvf ../../mr3020-packages/libncurses_*.ipk data.tar.gz
-tar zxvf data.tar.gz
-tar zxvf ../../mr3020-packages/terminfo_*.ipk data.tar.gz
-tar zxvf data.tar.gz
-tar zxvf ../../mr3020-packages/tcpdump_*.ipk data.tar.gz
-tar zxvf data.tar.gz
-tar zxvf ../../mr3020-packages/mkdosfs_*.ipk data.tar.gz
-tar zxvf data.tar.gz
-tar zxvf ../../mr3020-packages/dosfsck_*.ipk data.tar.gz
-tar zxvf data.tar.gz
-tar zxvf ../../mr3020-packages/dosfslabel_*.ipk data.tar.gz
-tar zxvf data.tar.gz
+wget -O packages.gz http://downloads.openwrt.org/snapshots/trunk/ar71xx/packages/Packages.gz
+gunzip packages.gz
+
+foreach p ( minicom_ libpcap libncurses_ terminfo_ mkdosfs_ dosfsck_ dosfslabel_ python coreutils bash procps curl_ sed_ gawk_ grep_ netcat_ )
+
+  foreach f ( `grep "^Filename: ${p}" packages | cut -f2 -d" "`) 
+     echo $f
+     if ( ! -e ../../mr3020-packages/${f} ) then
+        ( cd ../../mr3020-packages ; wget http://downloads.openwrt.org/snapshots/trunk/ar71xx/packages/${f} )
+     endif
+     tar zxvf ../../mr3020-packages/${f} data.tar.gz
+     tar zxvf data.tar.gz
+  end
+
+end
 
 rm data.tar.gz
 mv usr/lib lib
 mv lib/lib/* lib
 mv usr/sbin sbin
+mv usr/bin bin
 mv usr/share share
 rmdir usr
 
