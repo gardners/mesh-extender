@@ -31,6 +31,8 @@ mv usr/bin bin
 mv usr/share share
 rmdir usr
 
-tar zcvf ../../mr3020-files/extra-files-serval.tgz sbin lib
+cp ../../mr3020-files/upgrade upgrade
+
+tar zcvf ../../mr3020-files/extra-files-serval.tgz sbin lib upgrade
 tar zcvf ../../mr3020-files/extra-files-usr.tgz share
 
