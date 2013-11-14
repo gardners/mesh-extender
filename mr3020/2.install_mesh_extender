@@ -50,7 +50,7 @@ cat tmp/network.$$
 $scp tmp/network.$$ root@${1}:/etc/config/network
 rm tmp/network.$$
 
-wlanmac=`$ssh root@{1} "cat /sys/class/ieee80211/phy0/macaddress"`
+wlanmac=`$ssh root@${1} "cat /sys/class/ieee80211/phy0/macaddress"`
 sed -e s/WIMAC/$wlanmac/g < mr3020-files/wireless > tmp/wireless.$$ 
 $scp tmp/wireless.$$ root@${1}:/etc/config/wireless
 
