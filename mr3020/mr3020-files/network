@@ -21,6 +21,6 @@ config interface public
 config interface mesh
 	option ifname	'wlan0-1'
 	option proto	static
-	option ipaddr	'10.64.MESHIP'
+	option ipaddr	'10.MESHIP'
 	option netmask	'255.192.0.0
 	option macaddr 	'82:MESHETHER'
