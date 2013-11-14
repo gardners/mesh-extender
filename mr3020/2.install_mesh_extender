@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 ssh="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 scp="scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
@@ -33,7 +33,7 @@ $ssh root@${1} rm /tmp/*.ipk
 mkdir -p tmp
 
   apE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
-meshE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'
+meshE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
 
 #mesh ip is last 3 of mac munched to 10.64/10
   meship=`echo $meshE |awk -F: '{  p3=("0x" substr($3,0,2))+0; p4=("0x" substr($4,0,2))+0  ;\
