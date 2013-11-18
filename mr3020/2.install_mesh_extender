@@ -24,7 +24,7 @@ cd mr3020-packages
 $scp kmod-*cp437*ipk kmod-lib-crc16_*_ar71xx.ipk kmod-scsi-core_*_ar71xx.ipk kmod-usb-storage-extras_*_ar71xx.ipk kmod-usb-storage_*_ar71xx.ipk libuuid_*_ar71xx.ipk libblkid_*_ar71xx.ipk libcom_err_*_ar71xx.ipk libpthread_*_ar71xx.ipk libext2fs_*_ar71xx.ipk e2fsprogs_*_ar71xx.ipk fdisk_*_ar71xx.ipk usbreset*ipk root@${ip}:/tmp
 cd ..
 
-$ssh root@$1 "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk )"
+$ssh root@${ip} "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk )"
 
 
 $scp mr3020-scripts/run-fdisk.sh root@${ip}:/tmp
@@ -87,7 +87,7 @@ $ssh root@${ip} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd /usr ; tar zxvf /
 cd mr3020-packages
 $ssh root@${ip} "( rm /tmp/*.ipk )"
 $scp kmod-fs-vfat* kmod-fs-msdos* root@${ip}:/tmp
-$ssh root@$1 "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk ; mount /dev/sda2 /serval ; /serval/sbin/mkdosfs /dev/sda1 ; mkdir /dos ; umount /serval)"
+$ssh root@${ip} "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk ; mount /dev/sda2 /serval ; /serval/sbin/mkdosfs /dev/sda1 ; mkdir /dos ; umount /serval)"
 cd ..
 
 #$ssh -o TCPKeepAlive=yes -o ServerAliveInterval=5 root@${ip} reboot
