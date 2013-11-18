@@ -1,13 +1,21 @@
 #!/bin/csh -f
 
-if ( "x$2" != "x" ) then
-   set model=$2
+if ( "x$1" == "x" ) then
+  # XXX Assumes the router has DHCP running AND probably that you are on Paul's mac
+  set ip=`ifconfig en0 | grep "inet " | awk '{ print $2;}' | cut -f1-3 -d.`.1
 else
-   set model=mr3020
+  set ip=$1
 endif
 
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  ~/.ssh/id_rsa.pub  root@${1}:/etc/dropbear/authorized_keys
+scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  ~/.ssh/id_rsa.pub  root@${ip}:/etc/dropbear/authorized_keys
 
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  openwrt-ar71xx-generic-tl-${model}-v1-squashfs-factory.bin root@${1}:/tmp
+set model=`ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o TCPKeepAlive=yes -o ServerAliveInterval=5  root@${ip} "( . /lib/ar71xx.sh  ; ar71xx_board_name )"`
+echo "Upgrading OpenWRT on the $model at $ip"
+
+if ( "x$2" != "x" ) then
+   set model=$2
+endif
+
+scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  openwrt-ar71xx-generic-${model}-v1-squashfs-factory.bin root@${ip}:/tmp
 # We use a short keep-alive interval so that ssh realises when the far end has rebooted and dropped the connection.
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o TCPKeepAlive=yes -o ServerAliveInterval=5  root@${1} "( cd /tmp ; sysupgrade -v openwrt-ar71xx-generic-tl-${model}-v1-squashfs-factory.bin )"
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o TCPKeepAlive=yes -o ServerAliveInterval=5  root@${ip} "( cd /tmp ; sysupgrade -v openwrt-ar71xx-generic-${model}-v1-squashfs-factory.bin )"
