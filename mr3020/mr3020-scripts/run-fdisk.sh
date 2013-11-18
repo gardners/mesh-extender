@@ -29,5 +29,8 @@ b
 w
 EOF
 echo "Finished fdisk, now formatting partitions..."
+umount /serval
+umount /serval-var
+umount /dos
 mkfs.ext4 /dev/sda2
 mkfs.ext4 /dev/sda3
