@@ -9,7 +9,7 @@ packagelist=`wget -q -O - ${repository}/packages/ | egrep "blkid_|block-mount|do
 
 rm mr3020-packages/*.ipk
 for file in $packagelist kmod-fs-vfat_${kernelversion}_ar71xx.ipk kmod-fs-msdos_${kernelversion}_ar71xx.ipk kmod-fs-ext4_${kernelversion}_ar71xx.ipk kmod-lib-crc16_${kernelversion}_ar71xx.ipk kmod-scsi-core_${kernelversion}_ar71xx.ipk kmod-usb-serial-cp210x_${kernelversion}_ar71xx.ipk kmod-usb-serial-pl2303_${kernelversion}_ar71xx.ipk kmod-usb-serial_${kernelversion}_ar71xx.ipk kmod-usb-storage-extras_${kernelversion}_ar71xx.ipk kmod-usb-storage_${kernelversion}_ar71xx.ipk ; do
-   wget -O mr3020-packages/$file ${repository}/packages/$file
+   wget -O $file ${repository}/packages/$file
 done
 
 rm openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin
