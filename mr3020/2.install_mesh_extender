@@ -1,35 +1,43 @@
-#!/bin/sh -x
+#!/bin/sh
 
 ssh="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 scp="scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
+ip=$1
+if [ "x$1" == "x" ]; then
+  # XXX Assumes the router has DHCP running AND probably that you are on Paul's mac
+  ip=`ifconfig en0 | grep "inet " | awk '{ print $2;}' | cut -f1-3 -d.`.1
+fi
+
+echo "Performing mesh extender installation on $ip"
+
 # Wait until box is up and running
-until $scp ~/.ssh/id_rsa.pub  root@${1}:/etc/dropbear/authorized_keys; do
+until $scp ~/.ssh/id_rsa.pub  root@${ip}:/etc/dropbear/authorized_keys; do
    sleep 2
 done
 
 # Remove any postinstalled packages
-$scp mr3020-scripts/cleanup-packages.sh root@${1}:/tmp
-$ssh root@${1} /tmp/cleanup-packages.sh
+$scp mr3020-scripts/cleanup-packages.sh root@${ip}:/tmp
+$ssh root@${ip} /tmp/cleanup-packages.sh
 
 cd mr3020-packages
-$scp kmod-*cp437*ipk kmod-lib-crc16_*_ar71xx.ipk kmod-scsi-core_*_ar71xx.ipk kmod-usb-storage-extras_*_ar71xx.ipk kmod-usb-storage_*_ar71xx.ipk libuuid_*_ar71xx.ipk libblkid_*_ar71xx.ipk libcom_err_*_ar71xx.ipk libpthread_*_ar71xx.ipk libext2fs_*_ar71xx.ipk e2fsprogs_*_ar71xx.ipk fdisk_*_ar71xx.ipk usbreset*ipk root@${1}:/tmp
+$scp kmod-*cp437*ipk kmod-lib-crc16_*_ar71xx.ipk kmod-scsi-core_*_ar71xx.ipk kmod-usb-storage-extras_*_ar71xx.ipk kmod-usb-storage_*_ar71xx.ipk libuuid_*_ar71xx.ipk libblkid_*_ar71xx.ipk libcom_err_*_ar71xx.ipk libpthread_*_ar71xx.ipk libext2fs_*_ar71xx.ipk e2fsprogs_*_ar71xx.ipk fdisk_*_ar71xx.ipk usbreset*ipk root@${ip}:/tmp
 cd ..
 
 $ssh root@$1 "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk )"
 
 
-$scp mr3020-scripts/run-fdisk.sh root@${1}:/tmp
-$ssh root@${1} /tmp/run-fdisk.sh
+$scp mr3020-scripts/run-fdisk.sh root@${ip}:/tmp
+$ssh root@${ip} /tmp/run-fdisk.sh
 
 #!/bin/sh
-$ssh root@${1} rm /tmp/*.ipk
-$scp mr3020-scripts/prepare-filesystems mr3020-packages/block-mount_*_ar71xx.ipk mr3020-packages/kmod-fs-*_ar71xx.ipk mr3020-packages/blkid* mr3020-packages/swap* mr3020-packages/librt* root@${1}:/tmp
-$ssh root@${1} /tmp/prepare-filesystems
+$ssh root@${ip} rm /tmp/*.ipk
+$scp mr3020-scripts/prepare-filesystems mr3020-packages/block-mount_*_ar71xx.ipk mr3020-packages/kmod-fs-*_ar71xx.ipk mr3020-packages/blkid* mr3020-packages/swap* mr3020-packages/librt* root@${ip}:/tmp
+$ssh root@${ip} /tmp/prepare-filesystems
 
 
 #!/bin/sh
-$ssh root@${1} rm /tmp/*.ipk
+$ssh root@${ip} rm /tmp/*.ipk
 mkdir -p tmp
 
   apE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
@@ -47,45 +55,41 @@ echo $meship $meshE $apE $apip
 sed -e s/MESHIP/$meship/g -e s/APIP/$apip/g -e s/MESHETHER/$meshE/g  -e s/APETHER/$apE/g < mr3020-files/network > tmp/network.$$
 
 cat tmp/network.$$
-$scp tmp/network.$$ root@${1}:/etc/config/network
+$scp tmp/network.$$ root@${ip}:/etc/config/network
 rm tmp/network.$$
 
-wlanmac=`$ssh root@${1} "cat /sys/class/ieee80211/phy0/macaddress"`
+wlanmac=`$ssh root@${ip} "cat /sys/class/ieee80211/phy0/macaddress"`
 sed -e s/WIMAC/$wlanmac/g < mr3020-files/wireless > tmp/wireless.$$ 
-$scp tmp/wireless.$$ root@${1}:/etc/config/wireless
+$scp tmp/wireless.$$ root@${ip}:/etc/config/wireless
 
 cd mr3020-files
-$ssh root@${1} mkdir -p /etc/serval /serval /serval-var /etc/hotplug.d/button
-$scp system dhcp root@${1}:/etc/config/
-$scp profile root@${1}:/etc/
-$scp S94servald root@${1}:/etc/rc.d/
-$scp hotplug2.rules inittab root@${1}:/etc/
-$scp buttons root@${1}:/etc/hotplug.d/button/
-$scp runservald serval.conf root@${1}:/etc/serval/
-$ssh root@${1} "( umount /serval ; mount /dev/sda2 /serval )"
-$scp servald.me root@${1}:/serval/servald
-$scp servald.me root@${1}:/serval/servald.factory
-$scp monitor-wifi root@${1}:/serval/sbin/monitor-wifi
-$ssh root@${1} "( umount /serval )"
-$ssh root@${1} "( umount /serval-var ; mount /dev/sda3 /serval-var ; mkdir -p /serval-var/log /serval-var/rhizome )"
-$ssh root@${1} "( umount /serval-var )"
+$ssh root@${ip} mkdir -p /etc/serval /serval /serval-var /etc/hotplug.d/button
+$scp system dhcp root@${ip}:/etc/config/
+$scp profile root@${ip}:/etc/
+$scp S94servald root@${ip}:/etc/rc.d/
+$scp hotplug2.rules inittab root@${ip}:/etc/
+$scp buttons root@${ip}:/etc/hotplug.d/button/
+$scp runservald serval.conf root@${ip}:/etc/serval/
+$ssh root@${ip} "( umount /serval ; mount /dev/sda2 /serval )"
+$scp servald.me root@${ip}:/serval/servald
+$scp servald.me root@${ip}:/serval/servald.factory
+$scp monitor-wifi root@${ip}:/serval/sbin/monitor-wifi
+$ssh root@${ip} "( umount /serval )"
+$ssh root@${ip} "( umount /serval-var ; mount /dev/sda3 /serval-var ; mkdir -p /serval-var/log /serval-var/rhizome )"
+$ssh root@${ip} "( umount /serval-var )"
 cd ..
 
-$ssh root@${1} "( mount /dev/sda2 /serval )"
-$scp mr3020-files/extra-files-serval.tgz root@${1}:/serval/s.tgz
-$scp mr3020-files/extra-files-usr.tgz root@${1}:/serval/u.tgz
-$ssh root@${1} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd /usr ; tar zxvf /serval/u.tgz ; rm /serval/u.tgz ; umount /serval )"
+$ssh root@${ip} "( mount /dev/sda2 /serval )"
+$scp mr3020-files/extra-files-serval.tgz root@${ip}:/serval/s.tgz
+$scp mr3020-files/extra-files-usr.tgz root@${ip}:/serval/u.tgz
+$ssh root@${ip} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd /usr ; tar zxvf /serval/u.tgz ; rm /serval/u.tgz ; umount /serval )"
 
 cd mr3020-packages
-$ssh root@${1} "( rm /tmp/*.ipk )"
-$scp kmod-fs-vfat* kmod-fs-msdos* root@${1}:/tmp
+$ssh root@${ip} "( rm /tmp/*.ipk )"
+$scp kmod-fs-vfat* kmod-fs-msdos* root@${ip}:/tmp
 $ssh root@$1 "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk ; mount /dev/sda2 /serval ; /serval/sbin/mkdosfs /dev/sda1 ; mkdir /dos ; umount /serval)"
 cd ..
 
-$ssh -o TCPKeepAlive=yes -o ServerAliveInterval=5 root@${1} reboot
+#$ssh -o TCPKeepAlive=yes -o ServerAliveInterval=5 root@${ip} reboot
 
-echo "Waiting for reboot to complete."
-# Wait until box is up and running
-until $ssh root@${1} /bin/true; do
-   sleep 2
-done
+echo "Login and check filesystem or reboot now to complete."
