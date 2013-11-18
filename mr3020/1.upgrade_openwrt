@@ -1,7 +1,13 @@
-#!/bin/sh
+#!/bin/csh -f
+
+if ( "x$2" != "x" ) then
+   set model=$2
+else
+   set model=mr3020
+endif
 
 scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  ~/.ssh/id_rsa.pub  root@${1}:/etc/dropbear/authorized_keys
 
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin root@${1}:/tmp
+scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  openwrt-ar71xx-generic-tl-${model}-v1-squashfs-factory.bin root@${1}:/tmp
 # We use a short keep-alive interval so that ssh realises when the far end has rebooted and dropped the connection.
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o TCPKeepAlive=yes -o ServerAliveInterval=5  root@${1} "( cd /tmp ; sysupgrade -v openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin )"
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o TCPKeepAlive=yes -o ServerAliveInterval=5  root@${1} "( cd /tmp ; sysupgrade -v openwrt-ar71xx-generic-tl-${model}-v1-squashfs-factory.bin )"
