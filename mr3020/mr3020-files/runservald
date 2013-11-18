@@ -1,6 +1,0 @@
-#!/bin/sh
-rm /etc/serval/servald.pid
-while [ 1 ]
-do
-/serval/servald start foreground
-done

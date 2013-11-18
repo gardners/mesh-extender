@@ -63,23 +63,13 @@ sed -e s/WIMAC/$wlanmac/g < mr3020-files/wireless > tmp/wireless.$$
 $scp tmp/wireless.$$ root@${ip}:/etc/config/wireless
 
 cd mr3020-files
-$ssh root@${ip} mkdir -p /etc/serval /serval /serval-var /etc/hotplug.d/button
-$scp system dhcp root@${ip}:/etc/config/
-$scp profile root@${ip}:/etc/
-$scp S94servald root@${ip}:/etc/rc.d/
-$scp hotplug2.rules inittab root@${ip}:/etc/
-$scp buttons root@${ip}:/etc/hotplug.d/button/
-$scp runservald serval.conf root@${ip}:/etc/serval/
+( cd stage-1 ; tar zcf - . ) | $ssh root@${ip} "( cd / ; rm -fr /serval /serval-var /dos ; tar xvf - )"
 $ssh root@${ip} "( umount /serval ; mount /dev/sda2 /serval )"
-$scp servald.me root@${ip}:/serval/servald
-$scp servald.me root@${ip}:/serval/servald.factory
-$scp monitor-wifi root@${ip}:/serval/sbin/monitor-wifi
-$ssh root@${ip} "( umount /serval )"
-$ssh root@${ip} "( umount /serval-var ; mount /dev/sda3 /serval-var ; mkdir -p /serval-var/log /serval-var/rhizome )"
-$ssh root@${ip} "( umount /serval-var )"
+( cd stage-2 ; tar zcf - . ) | $ssh root@${ip} "( cd / ; tar xvf - )"
+$ssh root@${ip} "( umount /serval-var ; mount /dev/sda3 /serval-var ; mkdir -p /serval-var/log /serval-var/rhizome ; umount /serval-var )"
 cd ..
 
-$ssh root@${ip} "( mount /dev/sda2 /serval )"
+#$ssh root@${ip} "( mount /dev/sda2 /serval )"
 $scp mr3020-files/extra-files-serval.tgz root@${ip}:/serval/s.tgz
 $scp mr3020-files/extra-files-usr.tgz root@${ip}:/serval/u.tgz
 $ssh root@${ip} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd /usr ; tar zxvf /serval/u.tgz ; rm /serval/u.tgz ; umount /serval )"
