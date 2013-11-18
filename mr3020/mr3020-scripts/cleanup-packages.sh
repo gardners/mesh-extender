@@ -5,4 +5,4 @@ opkg remove --force-removal-of-essential-packages libpthread
 rm /overlay/usr/lib/modules/*/ext*.ko /overlay/usr/sbin/e2fsck
 opkg remove --force-removal-of-dependent-packages `egrep "Package:| 1315" status | cut -f2 -d" " | awk '{ if (1*$1>100000) print n; n=$1; }'`
 df -h
-find /overlay -ls
+find /overlay 
