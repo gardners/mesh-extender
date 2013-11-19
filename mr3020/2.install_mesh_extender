@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 ssh="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 scp="scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
@@ -6,10 +6,13 @@ scp="scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 ip=$1
 if [ "x$1" == "x" ]; then
   # XXX Assumes the router has DHCP running AND probably that you are on Paul's mac
-  ip=`ifconfig en0 | grep "inet " | awk '{ print $2;}' | cut -f1-3 -d.`.1
+  ip=`ifconfig en0 | grep "inet " | head -1 | awk '{ print $2;}' | cut -f1-3 -d.`.1 
 fi
 
 echo "Performing mesh extender installation on $ip"
+
+# Try logging in with telnet and setting root password if not already done.
+mr3020-scripts/telnet_set_root_pass ${ip}
 
 # Wait until box is up and running
 until $scp ~/.ssh/id_rsa.pub  root@${ip}:/etc/dropbear/authorized_keys; do
@@ -19,6 +22,8 @@ done
 # Remove any postinstalled packages
 $scp mr3020-scripts/cleanup-packages.sh root@${ip}:/tmp
 $ssh root@${ip} /tmp/cleanup-packages.sh
+
+echo "Cleanup complete."
 
 cd mr3020-packages
 $scp kmod-*cp437*ipk kmod-lib-crc16_*_ar71xx.ipk kmod-scsi-core_*_ar71xx.ipk kmod-usb-storage-extras_*_ar71xx.ipk kmod-usb-storage_*_ar71xx.ipk libuuid_*_ar71xx.ipk libblkid_*_ar71xx.ipk libcom_err_*_ar71xx.ipk libpthread_*_ar71xx.ipk libext2fs_*_ar71xx.ipk e2fsprogs_*_ar71xx.ipk fdisk_*_ar71xx.ipk usbreset*ipk root@${ip}:/tmp
@@ -37,7 +42,7 @@ $ssh root@${ip} /tmp/prepare-filesystems
 
 
 #!/bin/sh
-$ssh root@${ip} rm /tmp/*.ipk
+$ssh root@${ip} "( rm /tmp/*.ipk ; /etc/rc.d/S94servald stop ; umount -f /dos ; umount -f /serval ; umount -f /serval-var )"
 mkdir -p tmp
 
   apE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
@@ -63,13 +68,12 @@ sed -e s/WIMAC/$wlanmac/g < mr3020-files/wireless > tmp/wireless.$$
 $scp tmp/wireless.$$ root@${ip}:/etc/config/wireless
 
 cd mr3020-files
-( cd stage-1 ; tar zcf - . ) | $ssh root@${ip} "( cd / ; rm -fr /serval /serval-var /dos ; tar xvf - )"
+( cd stage-1 ; tar zcf - . ) | $ssh root@${ip} "( cd / ; tar zxvf - )"
 $ssh root@${ip} "( umount /serval ; mount /dev/sda2 /serval )"
-( cd stage-2 ; tar zcf - . ) | $ssh root@${ip} "( cd / ; tar xvf - )"
+( cd stage-2 ; tar zcf - . ) | $ssh root@${ip} "( cd / ; tar zxvf - )"
 $ssh root@${ip} "( umount /serval-var ; mount /dev/sda3 /serval-var ; mkdir -p /serval-var/log /serval-var/rhizome ; umount /serval-var )"
 cd ..
 
-#$ssh root@${ip} "( mount /dev/sda2 /serval )"
 $scp mr3020-files/extra-files-serval.tgz root@${ip}:/serval/s.tgz
 $scp mr3020-files/extra-files-usr.tgz root@${ip}:/serval/u.tgz
 $ssh root@${ip} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd /usr ; tar zxvf /serval/u.tgz ; rm /serval/u.tgz ; umount /serval )"

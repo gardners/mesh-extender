@@ -1,0 +1,16 @@
+#!/usr/bin/env expect
+set timeout 5
+set ip [lindex $argv 0]
+
+spawn telnet $ip
+expect "'^]'." sleep .1;
+send "\r";
+sleep .1;
+expect "root@OpenWrt:/#"
+send "passwd\r"
+expect "New password:"
+send "root\r";
+expect "Retype password:"
+send "root\r";
+expect "root@OpenWrt:/#"
+send "exit\r";
