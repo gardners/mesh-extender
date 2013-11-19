@@ -1,0 +1,20 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=41
+
+start() {
+  # Start servald
+  mkdir -p /serval /serval-var /dos
+  mount /dev/sda1 /dos
+  mount /dev/sda2 /serval
+  mount /dev/sda3 /serval-var
+  export SERVALINSTANCE_PATH=/etc/serval
+  mkdir -p $SERVALINSTANCE_PATH
+  /etc/serval/runservald &
+}
+
+stop() {
+  export SERVALINSTANCE_PATH=/etc/serval
+  /serval/servald stop
+}

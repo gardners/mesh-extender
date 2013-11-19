@@ -1,0 +1,19 @@
+
+# Run dnsmasq on each interface, redirecting all enquiries to the right local IP address
+# since we don't route anything.
+
+# Get list of interface names and IP addresses
+list=`ifconfig | egrep "^[a-z]|inet addr:|inet " | sed -e 's/	/ /g' -e 's/inet addr:/inet:/g' -e 's/inet /inet:/g' -e 's/^ *inet:/IP:/g' -e 's/ .*$//g' -e 's/:$//g' | grep -v 127.0.0.1`
+
+pkill dnsmasq
+interface=
+for line in $list
+do
+  prefix=`echo $line | cut -c1-3`
+  if [ "x$prefix" == "xIP:" ]; then
+    ip=`echo $line | cut -c4-`
+    echo dnsmasq -a ${ip} --address=/\#/${ip} -h -2 -b -f -R -C /dev/null --pid-file=/tmp/pid.dnsmasq.${ip} --dhcp-leasefile=/tmp/leases.dnsmasq.${ip} -F 0.0.0.0,255.255.255.255 -d
+  else
+    interface=$line
+  fi
+done
