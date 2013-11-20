@@ -21,6 +21,8 @@ dropbear_start()
 	passwd -l root # lock root
         [ -e /dos/noroot ] && return 1
         touch /dos/noroot
+        echo "Remove this file to enable SSH login to the mesh extender as root:root." >/dos/noroot
+        echo "This file is recreated on each reboot, so is effective for one boot only." >>/dos/noroot
         passwd -u root # unlock root if allowing dropbear
 
 	append_ports()
