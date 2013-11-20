@@ -48,4 +48,4 @@ mv serval.conf /etc/serval/serval.conf
 /serval/servald start
 
 # delete upgrade file when successfully applied
-#rm $up
+rm $up
