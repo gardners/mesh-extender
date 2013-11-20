@@ -12,12 +12,9 @@ fi
 echo "Performing mesh extender installation on $ip"
 
 # Try logging in with telnet and setting root password if not already done.
+# Also install our RSA public key to allow password-less login while setting
+# things up over ssh/scp.
 mr3020-scripts/telnet_set_root_pass ${ip}
-
-# Wait until box is up and running
-until $scp ~/.ssh/id_rsa.pub  root@${ip}:/etc/dropbear/authorized_keys; do
-   sleep 2
-done
 
 # Remove any postinstalled packages
 $scp mr3020-scripts/cleanup-packages.sh root@${ip}:/tmp
