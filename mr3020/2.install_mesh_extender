@@ -66,20 +66,24 @@ $scp tmp/wireless.$$ root@${ip}:/etc/config/wireless
 
 cd mr3020-files
 ( cd stage-1 ; tar zcf - . ) | $ssh root@${ip} "( cd / ; tar zxvf - )"
-$ssh root@${ip} "( umount /serval ; mount /dev/sda2 /serval )"
+$ssh root@${ip} "( umount /serval ; mount /dev/sda2 /serval ; umount /serval-var ; mount /dev/sda3 /serval-var )"
 ( cd stage-2 ; tar zcf - . ) | $ssh root@${ip} "( cd / ; tar zxvf - )"
-$ssh root@${ip} "( umount /serval-var ; mount /dev/sda3 /serval-var ; mkdir -p /serval-var/log /serval-var/rhizome ; umount /serval-var )"
+$ssh root@${ip} "( mkdir -p /serval-var/log /serval-var/rhizome )"
 cd ..
 
 $scp mr3020-files/extra-files-serval.tgz root@${ip}:/serval/s.tgz
 $scp mr3020-files/extra-files-usr.tgz root@${ip}:/serval/u.tgz
-$ssh root@${ip} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd /usr ; tar zxvf /serval/u.tgz ; rm /serval/u.tgz ; umount /serval )"
+$ssh root@${ip} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd /usr ; tar zxvf /serval/u.tgz ; rm /serval/u.tgz )"
 
 cd mr3020-packages
 $ssh root@${ip} "( rm /tmp/*.ipk )"
 $scp kmod-fs-vfat* kmod-fs-msdos* root@${ip}:/tmp
 $ssh root@${ip} "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk ; mount /dev/sda2 /serval ; /serval/sbin/mkdosfs /dev/sda1 ; mkdir /dos ; umount /serval)"
 cd ..
+
+# Install serial module for python ready to program radio
+$scp mr3020-files/myserial-2.6.tar.gz mr3020-files/pexpect-2.4.tar.gz root@${ip}:/serval-var
+$ssh root@${ip} "( cd /serval-var ; tar zxvf myserial-2.6.tar.gz ; cd myserial-2.6 ; python setup.py install ; cd .. ; tar zxvf pexpect-2.4.tar.gz ; cd pexpect-2.4 ; pythong setup.py install ; cd .. ; rm -fr myserial* pexpect* )"
 
 #$ssh -o TCPKeepAlive=yes -o ServerAliveInterval=5 root@${ip} reboot
 
