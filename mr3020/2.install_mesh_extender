@@ -78,12 +78,13 @@ $ssh root@${ip} "( cd /serval ; tar zxvf s.tgz ; rm s.tgz ; cd /usr ; tar zxvf /
 cd mr3020-packages
 $ssh root@${ip} "( rm /tmp/*.ipk )"
 $scp kmod-fs-vfat* kmod-fs-msdos* root@${ip}:/tmp
-$ssh root@${ip} "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk ; mount /dev/sda2 /serval ; /serval/sbin/mkdosfs /dev/sda1 ; mkdir /dos ; umount /serval)"
+$ssh root@${ip} "( opkg install /tmp/*.ipk ; rm /tmp/*.ipk ; mount /dev/sda2 /serval ; /serval/sbin/mkdosfs /dev/sda1 ; mkdir /dos )"
 cd ..
 
 # Install serial module for python ready to program radio
-$scp mr3020-files/myserial-2.6.tar.gz mr3020-files/pexpect-2.4.tar.gz root@${ip}:/serval-var
-$ssh root@${ip} "( cd /serval-var ; tar zxvf myserial-2.6.tar.gz ; cd myserial-2.6 ; python setup.py install ; cd .. ; tar zxvf pexpect-2.4.tar.gz ; cd pexpect-2.4 ; pythong setup.py install ; cd .. ; rm -fr myserial* pexpect* )"
+$scp mr3020-files/pyserial-2.6.tar.gz mr3020-files/pexpect-2.4.tar.gz root@${ip}:/serval-var
+# need to source profile manually and poke init so that there is no login tty on /dev/ttyATH0 to get in the way of things.
+$ssh root@${ip} "( . /etc/profile ; init -q ; cd /serval-var ; tar zxvf pyserial-2.6.tar.gz ; cd pyserial-2.6 ; python setup.py install ; cd /serval-var ; tar zxvf pexpect-2.4.tar.gz ; cd pexpect-2.4 ; python setup.py install ; cd /serval-var ; rm -fr pyserial* pexpect* ; cd /serval ; /serval/sbin/uploader.py --port /dev/ttyATH0 /serval/radio~rfd900a.ihx )"
 
 #$ssh -o TCPKeepAlive=yes -o ServerAliveInterval=5 root@${ip} reboot
 
