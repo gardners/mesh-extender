@@ -12,7 +12,11 @@ for file in $packagelist kmod-fs-vfat_${kernelversion}_ar71xx.ipk kmod-fs-msdos_
    wget -O $file ${repository}/packages/$file
 done
 
-rm openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin
-wget ${repository}/openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-factory.bin
-
 ./get_extra_files
+
+# Get openwrt factory images
+cd ..
+for model in tl-mr3020-v1 wr703n-v1 tl-mr3040-v1 tl-mr3040-v2; do
+  rm openwrt-ar71xx-generic-${model}-squashfs-factory.bin
+  wget ${repository}/openwrt-ar71xx-generic-${model}-squashfs-factory.bin
+done
