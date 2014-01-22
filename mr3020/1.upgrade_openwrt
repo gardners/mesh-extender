@@ -7,6 +7,11 @@ else
   set ip=$1
 endif
 
+# Try logging in with telnet and setting root password if not already done.
+# Also install our RSA public key to allow password-less login while setting
+# things up over ssh/scp.
+mr3020-scripts/telnet_set_root_pass ${ip}
+
 scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  ~/.ssh/id_rsa.pub  root@${ip}:/etc/dropbear/authorized_keys
 
 set model=`ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o TCPKeepAlive=yes -o ServerAliveInterval=5  root@${ip} "( . /lib/ar71xx.sh  ; ar71xx_board_name )"`
