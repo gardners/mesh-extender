@@ -10,7 +10,7 @@ find .
 wget -O packages.gz http://downloads.openwrt.org/snapshots/trunk/ar71xx/packages/Packages.gz
 gunzip packages.gz
 
-foreach p ( minicom_ libpcap libncurses_ terminfo_ mkdosfs_ dosfsck_ dosfslabel_ python coreutils bash procps curl_ sed_ gawk_ grep_ netcat_ chilli zlib)
+foreach p ( minicom_ libpcap libncurses_ terminfo_ mkdosfs_ dosfsck_ dosfslabel_ python coreutils bash procps curl_ sed_ gawk_ grep_ netcat_ chilli zlib tcpdump_)
 
   foreach f ( `grep "^Filename: ${p}" packages | cut -f2 -d" "`) 
      echo $f
